@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Love Algorithm | Interactive Love Code</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom Typography & Palette */
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0712;
+            color: #f3e8ff;
+            overflow-x: hidden;
+        }
+        
+        .font-code {
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .font-cursive {
+            font-family: 'Sacramento', cursive;
+        }
+        /* Glassmorphism Styling */
+        
+        .glass-panel {
+            background: rgba(23, 15, 38, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(244, 114, 182, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .glass-card {
+            background: rgba(30, 19, 50, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(236, 72, 153, 0.4);
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.25);
+            transform: translateY(-2px);
+        }
+        /* Glowing Gradients */
+        
+        .text-glow-pink {
+            text-shadow: 0 0 15px rgba(244, 114, 182, 0.6), 0 0 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .text-glow-gold {
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.6), 0 0 30px rgba(245, 158, 11, 0.4);
+        }
+        
+        .glow-button {
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+        }
+        
+        .glow-button:hover {
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.7), 0 0 50px rgba(219, 39, 119, 0.4);
+            transform: scale(1.02);
+        }
+        /* Syntax Highlighting Colors */
+        
+        .code-keyword {
+            color: #f472b6;
+        }
+        /* Pink */
+        
+        .code-function {
+            color: #60a5fa;
+        }
+        /* Blue */
+        
+        .code-string {
+            color: #34d399;
+        }
+        /* Emerald */
+        
+        .code-operator {
+            color: #fbbf24;
+        }
+        /* Gold */
+        
+        .code-comment {
+            color: #9ca3af;
+            font-style: italic;
+        }
+        /* Gray */
+        
+        .code-var {
+            color: #c084fc;
+        }
+        /* Purple */
+        
+        .code-boolean {
+            color: #f87171;
+        }
+        /* Red/Coral */
+        /* Custom Range Input */
+        
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        
+        input[type=range]:focus {
+            outline: none;
+        }
+        
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            border: 1px solid rgba(244, 114, 182, 0.2);
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #ec4899;
+            box-shadow: 0 0 10px #ec4899;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -6px;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #f472b6;
+        }
+        /* Keyframe Animations */
+        
+        @keyframes pulse-glow {
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse-glow 6s infinite ease-in-out;
+        }
+        /* Continuous 3D Spinning Effect for Overlay */
+        
+        @keyframes vortexRotate {
+            0% {
+                transform: rotateX(15deg) rotateY(0deg) rotateZ(0deg) scale(0.8);
+            }
+            50% {
+                transform: rotateX(-15deg) rotateY(180deg) rotateZ(180deg) scale(1.15);
+            }
+            100% {
+                transform: rotateX(15deg) rotateY(360deg) rotateZ(360deg) scale(0.8);
+            }
+        }
+        
+        @keyframes spiralFly {
+            0% {
+                transform: translate3d(0, 0, -1000px) rotate(0deg) scale(0.1);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate3d(var(--tx), var(--ty), 800px) rotate(var(--rot)) scale(2);
+                opacity: 0;
+            }
+        }
+        
+        .animate-vortex {
+            animation: vortexRotate 12s infinite ease-in-out;
+            transform-style: preserve-3d;
+        }
+        
+        .spiral-item {
+            position: absolute;
+            will-change: transform, opacity;
+            animation: spiralFly var(--duration) infinite linear;
+            animation-delay: var(--delay);
+            text-shadow: 0 0 20px rgba(244, 114, 182, 0.9), 0 0 40px rgba(236, 72, 153, 0.6);
+        }
+        /* Custom Scrollbar */
+        
+         ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: rgba(11, 7, 18, 0.8);
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: rgba(236, 72, 153, 0.3);
+            border-radius: 4px;
+        }
+        
+         ::-webkit-scrollbar-thumb:hover {
+            background: rgba(236, 72, 153, 0.6);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen relative overflow-x-hidden selection:bg-pink-500 selection:text-white">
+
+    <!-- Interactive Canvas Background -->
+    <canvas id="heartCanvas" class="fixed inset-0 pointer-events-auto z-0"></canvas>
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="fixed top-1/4 left-10 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
+    <div class="fixed bottom-1/4 right-10 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-slow" style="animation-delay: 2s;"></div>
+    <div class="fixed top-2/3 left-1/3 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-slow" style="animation-delay: 4s;"></div>
+
+    <!-- Main Container -->
+    <main class="relative z-10 max-w-5xl mx-auto px-4 py-8 md:py-12 flex flex-col gap-10">
+
+        <!-- Header Section -->
+        <header class="text-center space-y-4">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-xs md:text-sm text-pink-300 mb-2 border border-pink-500/30">
+                <i class="fa-solid font-code text-xs text-pink-400">v2.0.26</i>
+                <span class="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping"></span>
+                <span>System Status: Infinitely In Love</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white">
+                The <span class="bg-gradient-to-r from-pink-400 via-rose-300 to-purple-400 bg-clip-text text-transparent text-glow-pink">Love Algorithm</span>
+            </h1>
+            <p class="text-slate-300 text-sm md:text-base max-w-xl mx-auto font-light">
+                An immutable, encrypted romantic protocol running endlessly in the runtime of my heart.
+            </p>
+        </header>
+
+        <!-- Section 1: Love Code Editor / Terminal -->
+        <section class="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-pink-500/20">
+            <!-- Terminal Header -->
+            <div class="bg-slate-950/80 px-4 py-3 border-b border-pink-500/10 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                    <span class="ml-2 text-xs font-code text-slate-400">love_protocol.ts</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-code text-slate-400">
+                    <button id="restartTyping" class="hover:text-pink-300 transition-colors flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-right"></i> Re-run
+                    </button>
+                    <span class="text-pink-400/50">|</span>
+                    <span id="compilerStatus" class="text-emerald-400 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check text-[10px]"></i> Compiled
+                    </span>
+                </div>
+            </div>
+
+            <!-- Terminal Body -->
+            <div class="p-4 md:p-6 font-code text-xs sm:text-sm md:text-base leading-relaxed overflow-x-auto min-h-[300px] bg-slate-950/60">
+                <pre id="codeDisplay" class="whitespace-pre-wrap word-break"></pre>
+            </div>
+        </section>
+
+        <!-- Section 2: Love Chemistry Simulator -->
+        <section class="glass-panel rounded-2xl p-6 md:p-8 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-pink-500/10 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-flask text-pink-400"></i> Love Chemistry Simulator
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-400">Adjust parameters to compute real-time relationship metrics.</p>
+                </div>
+                <!-- Dynamic Verdict Badge -->
+                <div id="verdictBadge" class="self-start md:self-auto px-4 py-2 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-300 text-xs md:text-sm font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-heart animate-bounce text-pink-400"></i>
+                    <span id="verdictText">Calculating Chemistry...</span>
+                </div>
+            </div>
+
+            <!-- Main Dynamic Love Meter Gauge -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-sm font-semibold">
+                    <span class="text-slate-300">Total Synergy Coefficient</span>
+                    <span id="totalPercentage" class="text-xl md:text-2xl font-bold text-pink-400 text-glow-pink">100%</span>
+                </div>
+                <div class="w-full h-4 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-pink-500/20">
+                    <div id="gaugeBar" class="h-full rounded-full bg-gradient-to-r from-pink-500 via-rose-400 to-amber-300 transition-all duration-500 ease-out shadow-[0_0_12px_rgba(236,72,153,0.8)]" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Interactive Sliders Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <!-- Trust Slider -->
+                <div class="glass-card p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between text-xs md:text-sm font-medium">
+                        <span class="text-slate-200 flex items-center gap-2"><i class="fa-solid fa-shield-heart text-pink-400"></i> Trust & Loyalty</span>
+                        <span id="trustVal" class="text-pink-400 font-code">100%</span>
+                    </div>
+                    <input type="range" id="sliderTrust" min="50" max="100" value="100" class="w-full">
+                </div>
+
+                <!-- Affection Slider -->
+                <div class="glass-card p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between text-xs md:text-sm font-medium">
+                        <span class="text-slate-200 flex items-center gap-2"><i class="fa-solid fa-hand-holding-heart text-rose-400"></i> Affection & Warmth</span>
+                        <span id="affectionVal" class="text-rose-400 font-code">100%</span>
+                    </div>
+                    <input type="range" id="sliderAffection" min="50" max="100" value="100" class="w-full">
+                </div>
+
+                <!-- Chemistry Slider -->
+                <div class="glass-card p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between text-xs md:text-sm font-medium">
+                        <span class="text-slate-200 flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-400"></i> Sparks & Chemistry</span>
+                        <span id="chemistryVal" class="text-amber-400 font-code">100%</span>
+                    </div>
+                    <input type="range" id="sliderChemistry" min="50" max="100" value="100" class="w-full">
+                </div>
+
+                <!-- Laughter Slider -->
+                <div class="glass-card p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between text-xs md:text-sm font-medium">
+                        <span class="text-slate-200 flex items-center gap-2"><i class="fa-solid fa-face-smile-beam text-purple-400"></i> Laughter & Joy</span>
+                        <span id="laughterVal" class="text-purple-400 font-code">100%</span>
+                    </div>
+                    <input type="range" id="sliderLaughter" min="50" max="100" value="100" class="w-full">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Secret Unbreakable Guarantee / Encrypted Love Letter Card -->
+        <section class="glass-panel rounded-2xl p-6 md:p-8 space-y-6 relative overflow-hidden">
+            <div class="flex items-center justify-between border-b border-pink-500/10 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-pink-400"></i> Unbreakable Love Covenant
+                </h2>
+                <span class="text-xs font-code text-pink-300 bg-pink-500/10 px-3 py-1 rounded-full border border-pink-500/20">
+                    AES-256 Encrypted
+                </span>
+            </div>
+
+            <div class="relative py-4 min-h-[160px] flex items-center justify-center text-center">
+                <!-- Encrypted State -->
+                <div id="encryptedContent" class="space-y-4 transition-all duration-500">
+                    <p class="font-code text-slate-400 text-xs md:text-sm tracking-wider">
+                        01001001 00100000 01001100 01001111 01010110 01000101 00100000 01011001 01001111 01010101
+                    </p>
+                    <button id="decryptBtn" class="glow-button px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold text-sm md:text-base flex items-center gap-2 mx-auto">
+                        <i class="fa-solid fa-key"></i> Decrypt Love Covenant
+                    </button>
+                </div>
+
+                <!-- Decrypted State (Hidden by default) -->
+                <div id="decryptedContent" class="hidden space-y-4 transition-all duration-700 opacity-0 transform translate-y-4 max-w-2xl mx-auto">
+                    <p class="font-cursive text-3xl md:text-5xl text-pink-200 leading-snug text-glow-pink">
+                        "In every universe, through every line of code, my heart will always execute the exact same choice: You."
+                    </p>
+                    <p class="text-xs md:text-sm text-slate-300 font-light leading-relaxed">
+                        Bug fixes may come and go, frameworks may change, but my commitment to holding your hand, sharing laughter, and building our future together is forever immutable.
+                    </p>
+                    <div class="pt-2 text-xs font-code text-amber-300 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-certificate"></i> Verified Signature: Forever & Always
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Interactive Romance Mini-Prompt -->
+        <section class="glass-panel rounded-2xl p-6 md:p-10 text-center space-y-6 relative overflow-hidden">
+            <div class="max-w-xl mx-auto space-y-3">
+                <div class="w-16 h-16 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center mx-auto text-2xl text-pink-400 animate-bounce">
+                    <i class="fa-solid fa-heart-circle-check"></i>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-bold text-white">
+                    Will you be my forever coding partner?
+                </h3>
+                <p class="text-slate-300 text-sm">
+                    Choose wisely! (Hint: The 'No' button seems to have a bug...)
+                </p>
+            </div>
+
+            <!-- Buttons Area -->
+            <div class="relative min-h-[120px] flex items-center justify-center gap-6" id="buttonContainer">
+                <button id="yesBtn" class="glow-button px-8 py-3.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 text-white font-bold text-base md:text-lg transition-transform active:scale-95 shadow-lg">
+                    Yes, absolutely! <i class="fa-solid fa-sparkles ml-1"></i>
+                </button>
+
+                <button id="noBtn" class="px-6 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-400 text-sm font-medium transition-all duration-150 absolute md:static">
+                    No thanks
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-slate-500 py-4 font-code">
+            <p>Crafted with <i class="fa-solid fa-heart text-rose-500"></i> & pure JavaScript. Forever & Always.</p>
+        </footer>
+
+    </main>
+
+    <!-- Floating Heart Trigger Button for Fullscreen Love Blast -->
+    <button id="floatingHeartBtn" class="fixed bottom-6 right-6 z-40 w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-rose-600 text-white text-2xl flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-pink-300/40 glow-button group cursor-pointer">
+        <i class="fa-solid fa-heart animate-pulse group-hover:scale-125 transition-transform"></i>
+        <span class="absolute -top-10 right-0 bg-slate-900/90 text-pink-300 text-[10px] font-code px-2 py-1 rounded-md border border-pink-500/30 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+            Click Me! ❤️
+        </span>
+    </button>
+
+    <!-- Fullscreen "I LOVE YOU" Overlay Screen -->
+    <div id="fullscreenLoveOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-700 p-4 overflow-hidden [perspective:1200px]">
+
+        <!-- Ambient Radial Glow -->
+        <div class="absolute w-[700px] h-[700px] bg-pink-600/30 rounded-full blur-[140px] pointer-events-none animate-pulse-slow"></div>
+
+        <!-- 3D Swirling/Spinning Particle Container -->
+        <div id="spiralVortexContainer" class="absolute inset-0 pointer-events-none overflow-hidden [transform-style:preserve-3d]"></div>
+
+        <!-- Screen Filling Center Typography with 3D Rotation -->
+        <div class="relative z-10 text-center space-y-4 scale-75 transition-transform duration-700 animate-vortex" id="overlayTextWrapper">
+            <div class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-white drop-shadow-[0_0_50px_rgba(244,114,182,0.9)]">
+                <span class="bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 bg-clip-text text-transparent text-glow-pink">
+                    I LOVE YOU
+                </span>
+            </div>
+            <p class="font-cursive text-4xl md:text-6xl text-pink-200 text-glow-pink">
+                Forever & Always, My Heart Belongs To You ❤️
+            </p>
+            <p class="font-code text-xs md:text-sm text-pink-400/80 pt-4">
+                [ Click anywhere to close ]
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal Dialog for 'Yes' Click -->
+    <div id="loveModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="glass-panel p-8 rounded-3xl max-w-md w-full text-center space-y-6 border border-pink-500/40 shadow-2xl transform scale-95 transition-transform duration-300" id="modalCard">
+            <div class="w-20 h-20 rounded-full bg-pink-500/20 border-2 border-pink-400 flex items-center justify-center mx-auto text-4xl text-pink-300 animate-pulse">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <div class="space-y-2">
+                <h4 class="text-3xl font-extrabold text-white">It's a Match! <i class="fa-solid fa-party-horn text-amber-300"></i></h4>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    System compiled with 0 errors! Our romance program is now running in an infinite loop of love, warmth, and shared adventures.
+                </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-pink-500/20 text-xs font-code text-pink-300">
+                Status 200: OK<br> Payload: Lifetime Happiness
+            </div>
+            <button id="closeModal" class="glow-button w-full py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-sm">
+                Forever Starts Now <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /* =======================================================
+                   1. CANVAS PARTICLE SYSTEM (Interactive Hearts)
+                   ======================================================= */
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const particles = [];
+        const mouse = {
+            x: null,
+            y: null
+        };
+
+        class HeartParticle {
+            constructor(x, y, isBurst = false) {
+                this.x = x || Math.random() * width;
+                this.y = y || height + Math.random() * 20;
+                this.size = Math.random() * 12 + 6;
+                this.speedY = isBurst ? (Math.random() - 0.5) * 6 : -(Math.random() * 1.5 + 0.5);
+                this.speedX = isBurst ? (Math.random() - 0.5) * 6 : (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.7 + 0.3;
+                this.hue = Math.random() * 40 + 330; // Pink/Rose spectrum
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+                this.isBurst = isBurst;
+                this.life = isBurst ? 100 : Infinity;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = `hsl(${this.hue}, 85%, 65%)`;
+
+                // Draw heart shape
+                ctx.beginPath();
+                const topCurveHeight = this.size * 0.3;
+                ctx.moveTo(0, topCurveHeight);
+                ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
+                ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                ctx.closePath();
+                ctx.fill();
+
+                // Glow effect
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = `hsl(${this.hue}, 85%, 65%)`;
+
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+
+                if (this.isBurst) {
+                    this.life -= 1.5;
+                    this.opacity = Math.max(0, this.life / 100);
+                    this.speedY += 0.05; // slight gravity for burst
+                } else {
+                    // Wrap around
+                    if (this.y < -20) {
+                        this.y = height + 20;
+                        this.x = Math.random() * width;
+                    }
+                }
+
+                // Mouse subtle repulsion
+                if (mouse.x && mouse.y) {
+                    const dx = this.x - mouse.x;
+                    const dy = this.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        const angle = Math.atan2(dy, dx);
+                        this.x += Math.cos(angle) * 2;
+                        this.y += Math.sin(angle) * 2;
+                    }
+                }
+            }
+        }
+
+        // Initialize particles
+        function initParticles() {
+            const count = Math.min(Math.floor(width / 20), 40);
+            for (let i = 0; i < count; i++) {
+                particles.push(new HeartParticle());
+            }
+        }
+
+        // Generate dynamic 3D spinning vortex items
+        const spiralVortexContainer = document.getElementById('spiralVortexContainer');
+
+        function build3DSwirlItems() {
+            spiralVortexContainer.innerHTML = '';
+            const totalItems = 120; // Massive swarm of rotating items
+            const words = ['I LOVE YOU', '❤️', '💖', 'I LOVE YOU', '💕', '✨', 'I LOVE YOU', '💗'];
+
+            for (let i = 0; i < totalItems; i++) {
+                const item = document.createElement('div');
+                item.className = 'spiral-item font-bold select-none';
+
+                const text = words[Math.floor(Math.random() * words.length)];
+                item.textContent = text;
+
+                // Random target offset vectors for spiral fly path
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 300 + Math.random() * 800;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                const rot = (Math.random() - 0.5) * 720;
+                const duration = 2.5 + Math.random() * 3.5;
+                const delay = Math.random() * 3;
+                const size = text.length > 2 ? (14 + Math.random() * 24) : (20 + Math.random() * 36);
+
+                item.style.fontSize = `${size}px`;
+                item.style.color = Math.random() > 0.3 ? '#f472b6' : '#fbbf24';
+                item.style.setProperty('--tx', `${tx}px`);
+                item.style.setProperty('--ty', `${ty}px`);
+                item.style.setProperty('--rot', `${rot}deg`);
+                item.style.setProperty('--duration', `${duration}s`);
+                item.style.setProperty('--delay', `${delay}s`);
+
+                // Center position
+                item.style.left = '50%';
+                item.style.top = '50%';
+
+                spiralVortexContainer.appendChild(item);
+            }
+        }
+        build3DSwirlItems();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+
+                if (p.isBurst && p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        // Interactivity
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('click', (e) => {
+            // Burst of hearts on click
+            for (let i = 0; i < 12; i++) {
+                particles.push(new HeartParticle(e.clientX, e.clientY, true));
+            }
+        });
+
+        initParticles();
+        animateParticles();
+
+
+        /* =======================================================
+           2. CODE EDITOR TYPING SIMULATION
+           ======================================================= */
+        const codeText = `// Love Protocol Definition v2.0
+<span class="code-keyword">import</span> { Heart, Soul, Happiness } <span class="code-keyword">from</span> <span class="code-string">'@universe/destiny'</span>;
+
+<span class="code-keyword">interface</span> <span class="code-var">LoveConfig</span> {
+    forever: <span class="code-boolean">boolean</span>;
+    patience: <span class="code-keyword">number</span>;
+    unconditional: <span class="code-boolean">boolean</span>;
+}
+
+<span class="code-keyword">async function</span> <span class="code-function">executeLoveStory</span>(you: <span class="code-var">Person</span>): <span class="code-var">Promise</span>&lt;<span class="code-var">Happiness</span>&gt; {
+    <span class="code-keyword">const</span> myHeart = <span class="code-keyword">new</span> <span class="code-function">Heart</span>({ owner: <span class="code-string">'Me'</span> });
+    
+    <span class="code-keyword">while</span> (myHeart.<span class="code-function">beats</span>()) {
+        <span class="code-keyword">await</span> myHeart.<span class="code-function">cherish</span>(you);
+        
+        <span class="code-keyword">if</span> (you.<span class="code-function">isSmiling</span>()) {
+            myHeart.joyLevel <span class="code-operator">+=</span> Infinity;
+        }
+    }
+    
+    <span class="code-comment">// Fallback: Eternity safety handler</span>
+    <span class="code-keyword">return await</span> <span class="code-function">foreverWithYou</span>();
+}
+
+<span class="code-comment">// Running initialization...</span>
+<span class="code-function">executeLoveStory</span>(<span class="code-string">'My Favorite Person'</span>);`;
+
+        const codeDisplay = document.getElementById('codeDisplay');
+        const restartBtn = document.getElementById('restartTyping');
+        let typingTimeout;
+
+        function typeCode() {
+            codeDisplay.innerHTML = '';
+            let index = 0;
+            const fullText = codeText;
+
+            // Render line by line or character chunks for smooth HTML preservation
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = fullText;
+
+            let charIndex = 0;
+            const rawHTML = fullText;
+
+            // Simple reveal mechanism
+            function step() {
+                codeDisplay.innerHTML = rawHTML.substring(0, charIndex) + '<span class="animate-pulse text-pink-400">|</span>';
+                if (charIndex < rawHTML.length) {
+                    // Skip HTML tags instantly to avoid breaking syntax tags
+                    if (rawHTML[charIndex] === '<') {
+                        while (charIndex < rawHTML.length && rawHTML[charIndex] !== '>') {
+                            charIndex++;
+                        }
+                        charIndex++;
+                    } else {
+                        charIndex++;
+                    }
+                    typingTimeout = setTimeout(step, 15);
+                } else {
+                    codeDisplay.innerHTML = rawHTML + '<span class="animate-pulse text-pink-400">|</span>';
+                }
+            }
+            step();
+        }
+
+        restartBtn.addEventListener('click', () => {
+            clearTimeout(typingTimeout);
+            typeCode();
+        });
+
+        // Run on load
+        typeCode();
+
+
+        /* =======================================================
+           3. FULLSCREEN "I LOVE YOU" OVERLAY & HEART TRIGGER
+           ======================================================= */
+        const fullscreenOverlay = document.getElementById('fullscreenLoveOverlay');
+        const overlayTextWrapper = document.getElementById('overlayTextWrapper');
+        const floatingHeartBtn = document.getElementById('floatingHeartBtn');
+
+        function triggerLoveOverlay(x, y) {
+            // Massive multi-wave Confetti Blast
+            const count = 200;
+            const defaults = {
+                origin: {
+                    y: 0.6
+                }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+                colors: ['#ec4899', '#f472b6']
+            });
+            fire(0.2, {
+                spread: 60,
+                colors: ['#fbbf24', '#f43f5e']
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                scalar: 1.2
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45
+            });
+
+            // Burst of tons of hearts in Canvas background
+            const centerX = x || window.innerWidth / 2;
+            const centerY = y || window.innerHeight / 2;
+            for (let i = 0; i < 80; i++) {
+                particles.push(new HeartParticle(centerX, centerY, true));
+            }
+
+            // Reveal Overlay & start dynamic 3D vortex
+            fullscreenOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlayTextWrapper.classList.remove('scale-75');
+            overlayTextWrapper.classList.add('scale-100');
+        }
+
+        // Close Overlay on Click
+        fullscreenOverlay.addEventListener('click', () => {
+            fullscreenOverlay.classList.add('opacity-0', 'pointer-events-none');
+            overlayTextWrapper.classList.remove('scale-100');
+            overlayTextWrapper.classList.add('scale-75');
+        });
+
+        // Floating Action Button Trigger
+        floatingHeartBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerLoveOverlay(e.clientX, e.clientY);
+        });
+
+        // Any heart icon clicked in the UI triggers the overlay
+        document.body.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.classList.contains('fa-heart') || target.closest('.fa-heart')) {
+                // Don't duplicate click if button already handles it
+                if (!e.target.closest('#floatingHeartBtn')) {
+                    triggerLoveOverlay(e.clientX, e.clientY);
+                }
+            }
+        });
+
+
+        /* =======================================================
+           4. LOVE CHEMISTRY SIMULATOR (Sliders & Gauge)
+           ======================================================= */
+        const sliderTrust = document.getElementById('sliderTrust');
+        const sliderAffection = document.getElementById('sliderAffection');
+        const sliderChemistry = document.getElementById('sliderChemistry');
+        const sliderLaughter = document.getElementById('sliderLaughter');
+
+        const trustVal = document.getElementById('trustVal');
+        const affectionVal = document.getElementById('affectionVal');
+        const chemistryVal = document.getElementById('chemistryVal');
+        const laughterVal = document.getElementById('laughterVal');
+
+        const totalPercentage = document.getElementById('totalPercentage');
+        const gaugeBar = document.getElementById('gaugeBar');
+        const verdictText = document.getElementById('verdictText');
+
+        function updateMetrics() {
+            const t = parseInt(sliderTrust.value);
+            const a = parseInt(sliderAffection.value);
+            const c = parseInt(sliderChemistry.value);
+            const l = parseInt(sliderLaughter.value);
+
+            trustVal.textContent = t + '%';
+            affectionVal.textContent = a + '%';
+            chemistryVal.textContent = c + '%';
+            laughterVal.textContent = l + '%';
+
+            const avg = Math.round((t + a + c + l) / 4);
+            totalPercentage.textContent = avg + '%';
+            gaugeBar.style.width = avg + '%';
+
+            // Verdict logic
+            if (avg === 100) {
+                verdictText.textContent = "Verdict: Perfect Divine Match ✨";
+            } else if (avg >= 85) {
+                verdictText.textContent = "Verdict: High Chemistry & Harmony 💕";
+            } else if (avg >= 70) {
+                verdictText.textContent = "Verdict: Strong & Warm Connection 🌸";
+            } else {
+                verdictText.textContent = "Verdict: Growing Spark 🌱";
+            }
+        }
+
+        [sliderTrust, sliderAffection, sliderChemistry, sliderLaughter].forEach(slider => {
+            slider.addEventListener('input', updateMetrics);
+        });
+
+        updateMetrics();
+
+
+        /* =======================================================
+           4. UNBREAKABLE COVENANT (Decryption Card)
+           ======================================================= */
+        const decryptBtn = document.getElementById('decryptBtn');
+        const encryptedContent = document.getElementById('encryptedContent');
+        const decryptedContent = document.getElementById('decryptedContent');
+
+        decryptBtn.addEventListener('click', () => {
+            // Heart burst effect
+            const rect = decryptBtn.getBoundingClientRect();
+            for (let i = 0; i < 20; i++) {
+                particles.push(new HeartParticle(rect.left + rect.width / 2, rect.top, true));
+            }
+
+            // Transition UI
+            encryptedContent.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                encryptedContent.classList.add('hidden');
+                decryptedContent.classList.remove('hidden');
+                setTimeout(() => {
+                    decryptedContent.classList.remove('opacity-0', 'translate-y-4');
+                }, 50);
+            }, 300);
+        });
+
+
+        /* =======================================================
+           5. INTERACTIVE DODGING BUTTON & YES MODAL
+           ======================================================= */
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const loveModal = document.getElementById('loveModal');
+        const closeModal = document.getElementById('closeModal');
+        const buttonContainer = document.getElementById('buttonContainer');
+
+        // Playful Dodging No Button
+        function dodgeNoButton() {
+            const containerRect = buttonContainer.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            // Calculate random new positions within bounds
+            const maxX = containerRect.width - btnRect.width - 20;
+            const maxY = 100; // Constrain vertical movement
+
+            const randomX = (Math.random() - 0.5) * (containerRect.width * 0.6);
+            const randomY = (Math.random() - 0.5) * 80;
+
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        noBtn.addEventListener('mouseenter', dodgeNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            dodgeNoButton();
+        });
+
+        // Yes Button Action (Confetti + Modal)
+        yesBtn.addEventListener('click', () => {
+            // Trigger Confetti explosion
+            confetti({
+                particleCount: 120,
+                spread: 70,
+                origin: {
+                    y: 0.6
+                },
+                colors: ['#ec4899', '#f472b6', '#fbbf24', '#c084fc']
+            });
+
+            // Extra heart burst
+            for (let i = 0; i < 30; i++) {
+                particles.push(new HeartParticle(window.innerWidth / 2, window.innerHeight / 2, true));
+            }
+
+            // Show Modal
+            loveModal.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('modalCard').classList.remove('scale-95');
+        });
+
+        closeModal.addEventListener('click', () => {
+            loveModal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('modalCard').classList.add('scale-95');
+        });
+
+        // Close modal on outside click
+        loveModal.addEventListener('click', (e) => {
+            if (e.target === loveModal) {
+                closeModal.click();
+            }
+        });
+    </script>
+</body>
+
+</html>
